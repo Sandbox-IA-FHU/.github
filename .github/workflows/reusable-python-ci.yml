@@ -1,0 +1,124 @@
+# Intégration continue commune aux dépôts de l'organisation.
+#
+# Les workflows ne s'héritent PAS automatiquement : chaque dépôt doit appeler
+# celui-ci explicitement, avec un fichier .github/workflows/ci.yml contenant :
+#
+#   name: CI
+#   on: [push, pull_request]
+#   jobs:
+#     ci:
+#       uses: Sandbox-IA-FHU/.github/.github/workflows/reusable-python-ci.yml@main
+#
+# Les checks apparaissent alors sous les noms « qualite », « tests » et
+# « donnees ». Si vous les rendez obligatoires dans un ruleset, attention :
+# un check requis dont le nom ne correspond à aucun job n'est jamais satisfait,
+# et la PR reste bloquée sans message clair. Renommer un job ici oblige à
+# mettre à jour les rulesets de tous les dépôts.
+
+name: CI Python (réutilisable)
+
+on:
+  workflow_call:
+    inputs:
+      version-python:
+        description: Version de Python utilisée pour les jobs
+        type: string
+        default: "3.13"
+      repertoire:
+        description: Répertoire du projet, si le dépôt n'est pas à la racine
+        type: string
+        default: "."
+      lancer-tests:
+        description: Mettre à false pour un dépôt en exploration sans tests
+        type: boolean
+        default: true
+
+jobs:
+  qualite:
+    name: qualite
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.repertoire }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+
+      - name: Installer les dépendances
+        run: uv sync --locked
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Formatage
+        run: uv run ruff format --check .
+
+  tests:
+    name: tests
+    if: ${{ inputs.lancer-tests }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.repertoire }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+
+      - name: Installer les dépendances
+        run: uv sync --locked
+
+      - name: Tests
+        run: uv run pytest
+        env:
+          # Aucun test ne doit dépendre d'un appel réseau à un fournisseur de
+          # modèle : c'est lent, facturé, et non déterministe. Les appels sont
+          # simulés. Une clé volontairement invalide fait échouer tout test qui
+          # tenterait un vrai appel.
+          ANTHROPIC_API_KEY: cle-invalide-pour-les-tests
+          OPENAI_API_KEY: cle-invalide-pour-les-tests
+
+  donnees:
+    name: donnees
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Aucun fichier de données suivi par Git
+        run: |
+          interdits=$(git ls-files \
+            '*.csv' '*.tsv' '*.parquet' '*.xlsx' '*.xls' \
+            '*.db' '*.sqlite' '*.sqlite3' \
+            '.env' '*/.env' || true)
+          if [ -n "$interdits" ]; then
+            echo "::error::Des fichiers de données ou de secrets sont suivis par Git."
+            echo "$interdits"
+            echo ""
+            echo "Voir DONNEES.md. Retirer du suivi ne suffit pas : le fichier"
+            echo "reste dans l'historique. Prévenir avant toute manipulation."
+            exit 1
+          fi
+          echo "Aucun fichier de données suivi."
+
+      - name: Notebooks vidés de leurs sorties
+        run: |
+          echo "Un notebook commité contient les résultats affichés des cellules."
+          restants=""
+          for f in $(git ls-files '*.ipynb'); do
+            if grep -q '"output_type"' "$f"; then
+              restants="$restants $f"
+            fi
+          done
+          if [ -n "$restants" ]; then
+            echo "::error::Notebooks contenant des sorties :$restants"
+            echo "Vider avec : uv run jupyter nbconvert --clear-output --inplace <fichier>"
+            exit 1
+          fi
+          echo "Aucune sortie de notebook commitée."

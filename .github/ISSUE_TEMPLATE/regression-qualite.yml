@@ -1,0 +1,80 @@
+name: Régression de qualité
+description: Un système qui marchait donne de moins bons résultats
+title: "[Régression] "
+labels: ["régression"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Avant de remplir : la dégradation est-elle **mesurée** ou **ressentie** ?
+        Les deux sont recevables, mais on ne les traite pas pareil. Une
+        impression sur trois exemples peut être un effet de hasard.
+
+  - type: dropdown
+    id: nature
+    attributes:
+      label: Nature du constat
+      options:
+        - Mesurée — le jeu d'évaluation a baissé
+        - Ressentie — quelques cas observés à la main
+    validations:
+      required: true
+
+  - type: textarea
+    id: constat
+    attributes:
+      label: Ce qui a changé
+      description: Ce que le système faisait avant, ce qu'il fait maintenant.
+      placeholder: L'extraction des montants renvoyait le total TTC, elle renvoie maintenant le HT sur les factures à plusieurs lignes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: chiffres
+    attributes:
+      label: Chiffres
+      description: Score avant et après, avec le nombre de cas et les dates. Si le constat est ressenti, indiquez combien de cas vous avez regardés.
+      placeholder: |
+        Avant : 0,91 sur 47 cas, run du 12/07/2026
+        Après : 0,78 sur les mêmes 47 cas, run du 03/09/2026
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration des deux runs
+      description: Modèle et version, paramètres, prompt, jeu. Point clé — qu'est-ce qui diffère exactement entre les deux ?
+      placeholder: |
+        Identique sauf la version du modèle : le fournisseur a mis à jour le 28/08.
+        Prompt, jeu et paramètres inchangés.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: origine
+    attributes:
+      label: Origine suspectée
+      options:
+        - Version de modèle modifiée côté fournisseur
+        - Modification du prompt
+        - Modification du code
+        - Changement dans les données d'entrée
+        - Inconnue
+    validations:
+      required: true
+
+  - type: textarea
+    id: repartition
+    attributes:
+      label: Répartition des échecs
+      description: Les erreurs sont-elles concentrées sur un type de cas ? C'est presque toujours la question qui débloque le diagnostic.
+      placeholder: Les 10 échecs sont tous des factures à plus de 3 lignes. Les factures simples passent toujours à 100 %.
+
+  - type: checkboxes
+    id: verifications
+    attributes:
+      label: Vérifications
+      options:
+        - label: Aucune donnée réelle, aucun extrait de document, aucun nom de client dans cette issue
+          required: true

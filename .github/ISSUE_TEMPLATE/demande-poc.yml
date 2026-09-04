@@ -1,0 +1,74 @@
+name: Demande de POC
+description: Proposer un nouveau sujet à explorer
+title: "[POC] "
+labels: ["poc", "à cadrer"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cette issue sert à décider si le sujet mérite un dépôt. Elle est
+        volontairement exigeante : la moitié des POC qui échouent ont échoué au
+        cadrage, pas à la technique.
+
+  - type: textarea
+    id: besoin
+    attributes:
+      label: Le besoin
+      description: Quel problème concret, pour qui, à la place de quoi aujourd'hui. Sans nom de client.
+      placeholder: Le traitement des demandes entrantes est trié à la main, environ 80 par jour, ce qui occupe une personne 1 h chaque matin.
+    validations:
+      required: true
+
+  - type: textarea
+    id: sans-ia
+    attributes:
+      label: Pourquoi pas sans IA
+      description: Qu'est-ce qui empêche de résoudre ça avec une règle, une requête SQL, un formulaire mieux fait ou un traitement classique ? Question obligatoire — c'est souvent là que le sujet s'arrête, et c'est très bien.
+      placeholder: Les demandes arrivent en texte libre par courriel, sans structure exploitable. Un tri par mots-clés a été tenté et plafonne à 60 %.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reussite
+    attributes:
+      label: À quoi ressemble un succès
+      description: Le critère qui fera dire oui ou non. Chiffré si possible, même grossièrement.
+      placeholder: Un tri automatique fiable à 90 % qui ramène le temps de tri sous 15 minutes par jour.
+    validations:
+      required: true
+
+  - type: textarea
+    id: donnees
+    attributes:
+      label: Données disponibles
+      description: Quelles données existent, en quel volume, et surtout — peut-on en fabriquer une version inventée réaliste pour le jeu d'évaluation ?
+      placeholder: Environ 15 000 demandes archivées. Un jeu de 60 cas inventés est réalisable en une demi-journée en s'inspirant de la forme.
+    validations:
+      required: true
+
+  - type: textarea
+    id: contraintes
+    attributes:
+      label: Contraintes connues
+      description: Budget, délai, sensibilité des données, obligation d'hébergement, latence acceptable.
+      placeholder: |
+        - Les données comportent des informations personnelles : hébergement UE obligatoire
+        - Traitement par lots le matin, la latence n'est pas critique
+        - Budget cible sous 100 € par mois
+
+  - type: textarea
+    id: temps
+    attributes:
+      label: Temps que vous comptez y passer
+      description: Un POC sans limite de temps devient un projet sans fin. Donnez une durée, et ce que vous ferez si elle est dépassée.
+      placeholder: 5 jours. Au-delà, on arrête et on archive avec la conclusion.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: verifications
+    attributes:
+      label: Vérifications
+      options:
+        - label: Aucun nom de client, aucune donnée réelle dans cette issue
+          required: true

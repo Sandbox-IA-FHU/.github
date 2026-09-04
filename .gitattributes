@@ -1,0 +1,3 @@
+# Normalise les fins de ligne : LF dans le dépôt, quel que soit le poste.
+# Sans ça, un script shell écrit sous Windows casse en CI.
+* text=auto eol=lf

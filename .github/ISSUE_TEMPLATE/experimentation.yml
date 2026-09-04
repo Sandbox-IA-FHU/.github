@@ -1,0 +1,73 @@
+name: Expérimentation
+description: Proposer une expérience à mener — une question, une hypothèse, une mesure
+title: "[Expé] "
+labels: ["expérimentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Une expérience se cadre **avant** d'être lancée. Si vous ne savez pas
+        encore quoi mesurer, c'est le moment de le décider, pas après.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question posée
+      description: En une phrase, en français, compréhensible par quelqu'un d'extérieur au projet.
+      placeholder: Est-ce qu'un modèle sait classer les demandes entrantes en 6 catégories avec assez de fiabilité pour éviter le tri manuel ?
+    validations:
+      required: true
+
+  - type: textarea
+    id: hypothese
+    attributes:
+      label: Hypothèse
+      description: Ce que vous pensez obtenir, et pourquoi. Écrire l'hypothèse avant le test est ce qui empêche de réinterpréter le résultat après coup.
+      placeholder: Un modèle de milieu de gamme devrait suffire, les catégories sont bien séparées. J'attends au moins 90 %.
+    validations:
+      required: true
+
+  - type: textarea
+    id: mesure
+    attributes:
+      label: Comment on mesurera
+      description: Métrique, nombre de cas, seuil visé. Les trois axes — qualité, coût, latence.
+      placeholder: |
+        - Qualité : comparaison exacte de la catégorie, sur 60 cas inventés (dont 12 hors périmètre)
+        - Seuil : 90 % global, et 0 mauvaise catégorie sur les demandes urgentes
+        - Coût : maximum 1 centime par demande
+        - Latence : médiane sous 2 s
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration prévue
+      description: Modèle(s) envisagé(s) avec version figée, paramètres, ce qu'on compare à quoi.
+      placeholder: |
+        Comparaison de 2 modèles, température 0, même prompt, même jeu.
+        Un seul paramètre change entre les deux runs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: donnees
+    attributes:
+      label: Jeu d'évaluation
+      description: D'où viennent les cas. Rappel — données inventées uniquement, jamais de données réelles.
+      placeholder: 60 demandes inventées reproduisant la forme des demandes réelles (longueur, ton, abréviations), contenu entièrement fictif.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: verifications
+    attributes:
+      label: Vérifications
+      options:
+        - label: Le jeu d'évaluation contient des cas où la bonne réponse est de refuser
+          required: true
+        - label: Aucune donnée réelle, aucun nom de client dans cette issue ni dans le jeu
+          required: true
+        - label: Les identifiants de modèle seront figés (pas d'alias mouvant)
+          required: true
