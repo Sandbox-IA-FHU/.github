@@ -47,6 +47,11 @@ donnée réelle dans le dépôt, point.
 - **Des exemples inventés**, écrits par vous, qui ressemblent à la structure
   réelle sans en reprendre le contenu.
 
+Ces trois cas ont un emplacement unique : **`evaluations/jeux/`**. C'est la
+seule zone du dépôt où un fichier de données a sa place, et l'intégration
+continue s'appuie dessus — un fichier de données ailleurs fait échouer le
+check `donnees`, quelle que soit son extension.
+
 Pour un jeu d'évaluation, c'est le point sensible : il faut que les cas
 ressemblent au réel pour que la mesure vaille quelque chose. La bonne méthode
 est de reproduire la **forme** (structure, longueur, style, cas tordus,
@@ -65,11 +70,21 @@ Et dans `.gitignore`, dès le premier commit — avant même d'avoir des donnée
 
 ```gitignore
 data/
+logs/
+*.log
 *.csv
+*.tsv
 *.parquet
 *.xlsx
 .env
+
+# Les jeux d'évaluation sont des données inventées : eux vivent dans le dépôt.
+!evaluations/jeux/**
 ```
+
+La dernière ligne rouvre la seule exception. Elle fonctionne parce que les
+lignes au-dessus excluent des extensions, pas le répertoire lui-même : Git ne
+sait pas ré-inclure un fichier dont un répertoire parent est exclu.
 
 Mettre le `.gitignore` en place **avant** est ce qui évite l'accident. Après,
 il est trop tard : le fichier est déjà dans l'historique.
@@ -134,7 +149,8 @@ client », « un groupe de distribution ».
 Ne pas essayer de réparer discrètement. Un `git push --force` mal fait aggrave
 la situation et fait perdre la trace de ce qui s'est passé.
 
-1. **Prévenir Florian immédiatement.** Avant toute manipulation.
+1. **Prévenir le responsable de l'organisation immédiatement**, à l'adresse
+   indiquée dans [SECURITY.md](SECURITY.md). Avant toute manipulation.
 2. Ne pas supprimer le dépôt — on perdrait la trace de l'étendue de la fuite.
 3. Noter l'heure du commit fautif et ce qu'il contenait exactement.
 4. La suite (réécriture d'historique, notification, mesures RGPD) se décide

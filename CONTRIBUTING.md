@@ -163,12 +163,18 @@ Trois vérifications tournent alors sur chaque push et chaque PR :
 |---|---|
 | `qualite` | `ruff check` et `ruff format --check` |
 | `tests` | `pytest`, avec des clés d'API volontairement invalides |
-| `donnees` | Aucun fichier de données suivi, aucun notebook avec ses sorties |
+| `donnees` | Aucun `.env` suivi, aucune donnée hors de `evaluations/jeux/`, aucun fichier de plus de 5 Mo, aucun notebook avec ses sorties |
 
 Les clés invalides du job `tests` ne sont pas un oubli : **aucun test ne doit
 appeler un vrai fournisseur de modèle**. C'est lent, c'est facturé, et le
 résultat change d'une exécution à l'autre — un test qui échoue une fois sur
 trois ne sert à rien. Les appels se simulent.
+
+Le check `donnees` filtre par **emplacement**, pas par extension : un jeu
+d'évaluation au format CSV est légitime dans `evaluations/jeux/` et refusé
+partout ailleurs. Le contrôle de taille complète le dispositif — c'est lui qui
+rattrape un export réel déposé dans la zone autorisée sous une extension
+anodine.
 
 Un dépôt en exploration qui n'a pas encore de tests peut passer
 `lancer-tests: false` en paramètre. Le check `donnees`, lui, ne se désactive

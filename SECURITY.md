@@ -32,6 +32,17 @@ signaler — c'est le rôle de la revue de trancher.
 - On vérifie avant de commiter : `git diff --staged` avant chaque `git commit`.
   C'est trois secondes et ça évite l'essentiel des accidents.
 
+### Le filet de sécurité
+
+La *push protection* de GitHub est activée sur les dépôts de l'organisation :
+un push contenant une clé reconnue est **refusé avant d'atteindre le serveur**.
+C'est la seule barrière qui agit avant la fuite plutôt qu'après.
+
+Elle ne dispense de rien. Elle ne connaît que les formats de clés qu'elle sait
+reconnaître, et ne voit ni les mots de passe, ni les jetons internes, ni les
+données. Si elle bloque un de vos pushs, ne cherchez pas à la contourner :
+c'est qu'il y a bien un secret dans le diff.
+
 ### Si une clé a fuité
 
 L'ordre compte. **Révoquer d'abord, nettoyer ensuite.**
@@ -41,7 +52,7 @@ L'ordre compte. **Révoquer d'abord, nettoyer ensuite.**
    minutes par des robots dédiés à ça.
 2. **En générer une nouvelle**, et vérifier ce que l'ancienne a consommé
    entre-temps (relevé de consommation du fournisseur).
-3. **Prévenir Florian.**
+3. **Prévenir le responsable de l'organisation** (adresse ci-dessus).
 4. **Nettoyer l'historique** ensuite seulement, et à plusieurs.
 
 L'erreur classique est d'inverser 1 et 4 : on passe une heure à réécrire

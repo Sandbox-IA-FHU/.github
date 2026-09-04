@@ -47,6 +47,7 @@ jobs:
         uses: astral-sh/setup-uv@v10
         with:
           enable-cache: true
+          python-version: ${{ inputs.version-python }}
 
       - name: Installer les dépendances
         run: |
@@ -81,13 +82,10 @@ jobs:
         uses: astral-sh/setup-uv@v10
         with:
           enable-cache: true
+          python-version: ${{ inputs.version-python }}
 
       - name: Installer les dépendances
         run: |
-          # --locked exige un uv.lock présent et à jour. Un dépôt en
-          # exploration n'en a pas encore : le cycle de vie ne l'exige qu'au
-          # statut actif. On avertit au lieu de bloquer, sinon tout dépôt
-          # exploratoire aurait une CI rouge en permanence.
           if [ -f uv.lock ]; then
             uv sync --locked
           else
@@ -111,21 +109,68 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Aucun fichier de données suivi par Git
+      - name: Aucun fichier d'environnement suivi
         run: |
-          interdits=$(git ls-files \
-            '*.csv' '*.tsv' '*.parquet' '*.xlsx' '*.xls' \
-            '*.db' '*.sqlite' '*.sqlite3' \
-            '.env' '*/.env' || true)
-          if [ -n "$interdits" ]; then
-            echo "::error::Des fichiers de données ou de secrets sont suivis par Git."
-            echo "$interdits"
+          secrets=$(git ls-files '.env' '*/.env' '*.env' || true)
+          if [ -n "$secrets" ]; then
+            echo "::error::Des fichiers d'environnement sont suivis par Git."
+            echo "$secrets"
             echo ""
-            echo "Voir DONNEES.md. Retirer du suivi ne suffit pas : le fichier"
-            echo "reste dans l'historique. Prévenir avant toute manipulation."
+            echo "Ils contiennent des clés. Voir SECURITY.md : révoquer les clés"
+            echo "AVANT de nettoyer l'historique, et prévenir."
             exit 1
           fi
-          echo "Aucun fichier de données suivi."
+          echo "Aucun fichier d'environnement suivi."
+
+      - name: Fichiers de données hors de la zone autorisée
+        run: |
+          # Un jeu d'évaluation est fait de données INVENTÉES et vit dans le
+          # dépôt : evaluations/jeux/ est donc la seule zone où un fichier de
+          # données a sa place. Partout ailleurs, il n'a rien à y faire.
+          #
+          # Filtrer par emplacement plutôt que par extension évite de refuser
+          # un jeu d'évaluation légitime au format CSV — le plus naturel pour
+          # ça — tout en gardant la règle stricte sur le reste du dépôt.
+          hors_zone=$(git ls-files \
+            '*.csv' '*.tsv' '*.parquet' '*.xlsx' '*.xls' \
+            '*.db' '*.sqlite' '*.sqlite3' \
+            | grep -v '^evaluations/jeux/' || true)
+          if [ -n "$hors_zone" ]; then
+            echo "::error::Fichiers de données hors de evaluations/jeux/ :"
+            echo "$hors_zone"
+            echo ""
+            echo "Voir DONNEES.md. Un jeu d'évaluation inventé va dans"
+            echo "evaluations/jeux/. Toute autre donnée reste hors du dépôt."
+            echo "Retirer du suivi ne suffit pas : le fichier reste dans"
+            echo "l'historique. Prévenir avant toute manipulation."
+            exit 1
+          fi
+          echo "Aucun fichier de données hors zone."
+
+      - name: Aucun fichier volumineux
+        run: |
+          # Le filtre par emplacement ne dit rien de ce qu'un fichier contient.
+          # Le volume, si : un jeu de 300 cas inventés pèse quelques dizaines
+          # de Ko. Au-delà de 5 Mo, c'est un export réel — y compris dans la
+          # zone autorisée, et quelle que soit l'extension. C'est ce contrôle
+          # qui rattrape un .json ou un .jsonl de données réelles, qu'un filtre
+          # par extension laisserait passer.
+          gros=$(git ls-files | while read -r f; do
+            taille=$(stat -c%s "$f" 2>/dev/null || echo 0)
+            if [ "$taille" -gt 5242880 ]; then
+              echo "$f ($((taille / 1048576)) Mo)"
+            fi
+          done)
+          if [ -n "$gros" ]; then
+            echo "::error::Fichiers de plus de 5 Mo suivis par Git :"
+            echo "$gros"
+            echo ""
+            echo "Un jeu d'évaluation inventé ne pèse pas ça. Vérifier qu'il ne"
+            echo "s'agit pas d'un export de données réelles. Si le fichier est"
+            echo "légitime, en discuter avant de contourner."
+            exit 1
+          fi
+          echo "Aucun fichier volumineux suivi."
 
       - name: Notebooks vidés de leurs sorties
         run: |
