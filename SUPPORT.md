@@ -7,7 +7,7 @@
 | Question technique, doute sur une approche | [Discussions](https://github.com/Sandbox-IA-FHU/.github/discussions) |
 | Défaut dans un dépôt précis | Issue sur le dépôt concerné |
 | Clé fuitée, donnée publiée | Message privé immédiat — voir [SECURITY.md](SECURITY.md) |
-| Blocage qui vous empêche d'avancer depuis une demi-journée | Mentionnez Florian directement |
+| Blocage qui vous empêche d'avancer depuis une demi-journée | Mentionnez le responsable de l'organisation directement |
 
 Les Discussions sont préférées au message privé pour tout ce qui n'est pas
 sensible : la réponse sert à ceux qui se poseront la question après vous.

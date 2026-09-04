@@ -91,10 +91,12 @@ README.md              en-tête statut/date/question/verdict obligatoire
 pyproject.toml
 uv.lock                commité
 .env.exemple           variables attendues, valeurs vides
-.gitignore             data/, .env, *.csv, *.parquet, *.xlsx
+.gitignore             data/, logs/, .env, extensions de données,
+                       avec !evaluations/jeux/** en exception
 prompts/               prompts versionnés, un fichier par version
 evaluations/
-  jeux/                jeux d'évaluation, données inventées
+  jeux/                jeux d'évaluation, données inventées — SEULE zone du
+                       dépôt où un fichier de données est admis
   runs/                résultats horodatés
 src/
 tests/

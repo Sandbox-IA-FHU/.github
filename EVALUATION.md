@@ -37,6 +37,9 @@ saura en faire.
 
 ### Combien de cas
 
+Ces seuils portent sur le jeu **principal**, celui sur lequel vous lisez le
+score. La réserve décrite plus bas se prend **en plus**, pas dedans.
+
 - **En dessous de 20** : aucune conclusion possible. Un cas qui bascule fait
   bouger le score de 5 points.
 - **30 à 50** : suffisant pour un POC exploratoire, en gardant en tête qu'un
@@ -44,6 +47,11 @@ saura en faire.
   significatif.
 - **100 à 300** : ce qu'il faut pour un système qu'on envisage sérieusement.
 - **Au-delà** : rarement nécessaire ici, et coûteux à maintenir.
+
+Concrètement, un POC démarre donc autour de **40 à 65 cas fabriqués** : 30 à 50
+pour le jeu principal, une dizaine ou quinze de plus pour la réserve. Prélever
+la réserve dans les 30 cas ferait passer le jeu principal sous le seuil des 20,
+là où plus rien n'est interprétable.
 
 Mieux vaut 40 cas bien choisis que 400 cas qui se ressemblent tous.
 
@@ -74,8 +82,8 @@ au reste.
 
 ### Le jeu de réserve
 
-Réservez 20 à 30 % des cas, mis de côté, sur lesquels vous ne regardez jamais le
-détail des erreurs.
+Fabriquez 20 à 30 % de cas **en plus** du jeu principal, mis de côté, sur
+lesquels vous ne regardez jamais le détail des erreurs.
 
 Pourquoi : à force d'ajuster le prompt en regardant les cas qui échouent, on
 finit par le spécialiser sur ces cas précis. Le score monte, la performance
