@@ -17,7 +17,7 @@ relu, repris et défendu devant quelqu'un d'autre.
 | Contribuer : branches, commits, PR | [Guide de contribution](https://github.com/Sandbox-IA-FHU/.github/blob/main/CONTRIBUTING.md) |
 | Manipuler de la donnée | [Règles données](https://github.com/Sandbox-IA-FHU/.github/blob/main/DONNEES.md) — **à lire avant le premier commit** |
 | Signaler une clé qui a fuité | [Sécurité](https://github.com/Sandbox-IA-FHU/.github/blob/main/SECURITY.md) |
-| Poser une question | Les Discussions de l'organisation |
+| Poser une question | [Discussions de l'organisation](https://github.com/Sandbox-IA-FHU/.github/discussions) |
 
 ## Les six principes
 

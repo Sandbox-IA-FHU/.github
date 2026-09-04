@@ -4,7 +4,7 @@
 
 | Situation | Où |
 |---|---|
-| Question technique, doute sur une approche | Discussions de l'organisation |
+| Question technique, doute sur une approche | [Discussions](https://github.com/Sandbox-IA-FHU/.github/discussions) |
 | Défaut dans un dépôt précis | Issue sur le dépôt concerné |
 | Clé fuitée, donnée publiée | Message privé immédiat — voir [SECURITY.md](SECURITY.md) |
 | Blocage qui vous empêche d'avancer depuis une demi-journée | Mentionnez Florian directement |

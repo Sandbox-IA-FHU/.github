@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Question ou discussion
-    url: https://github.com/orgs/Sandbox-IA-FHU/discussions
+    url: https://github.com/Sandbox-IA-FHU/.github/discussions
     about: Pour une question technique ou un doute sur une approche. Cherchez trente minutes avant, puis demandez.
   - name: Clé d'API ou donnée qui a fuité
     url: https://github.com/Sandbox-IA-FHU/.github/blob/main/SECURITY.md
