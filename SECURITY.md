@@ -11,7 +11,7 @@ Pour tout ce qui touche aux données métier — extraits, exports, traces — v
 **N'ouvrez pas d'issue publique.** Une issue est visible immédiatement, y
 compris par des robots qui scrutent les dépôts en continu.
 
-Écrivez en privé au responsable de l'organisation : `<À COMPLÉTER>`.
+Écrivez en privé au responsable de l'organisation : `fhuillet@it-solutions.cloud`.
 
 Indiquez le dépôt, ce que vous avez constaté, et depuis quand si vous le savez.
 Vous n'avez pas besoin d'être certain qu'il s'agit d'un vrai problème pour
