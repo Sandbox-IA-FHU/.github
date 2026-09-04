@@ -88,7 +88,7 @@ en clair, même si vous avez ensuite modifié le code.
 Videz les sorties avant de commiter :
 
 ```bash
-uv run jupyter nbconvert --clear-output --inplace mon_notebook.ipynb
+uvx --from nbconvert jupyter-nbconvert --clear-output --inplace mon_notebook.ipynb
 ```
 
 Mieux : sortir les notebooks du dépôt une fois l'exploration terminée. Un
