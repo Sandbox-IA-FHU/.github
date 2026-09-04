@@ -49,7 +49,17 @@ jobs:
           enable-cache: true
 
       - name: Installer les dépendances
-        run: uv sync --locked
+        run: |
+          # --locked exige un uv.lock présent et à jour. Un dépôt en
+          # exploration n'en a pas encore : le cycle de vie ne l'exige qu'au
+          # statut actif. On avertit au lieu de bloquer, sinon tout dépôt
+          # exploratoire aurait une CI rouge en permanence.
+          if [ -f uv.lock ]; then
+            uv sync --locked
+          else
+            echo "::warning::Pas de uv.lock : dépendances non figées. Exigé pour passer au statut actif, voir CYCLE-DE-VIE.md."
+            uv sync
+          fi
 
       - name: Lint
         run: uv run ruff check .
@@ -73,7 +83,17 @@ jobs:
           enable-cache: true
 
       - name: Installer les dépendances
-        run: uv sync --locked
+        run: |
+          # --locked exige un uv.lock présent et à jour. Un dépôt en
+          # exploration n'en a pas encore : le cycle de vie ne l'exige qu'au
+          # statut actif. On avertit au lieu de bloquer, sinon tout dépôt
+          # exploratoire aurait une CI rouge en permanence.
+          if [ -f uv.lock ]; then
+            uv sync --locked
+          else
+            echo "::warning::Pas de uv.lock : dépendances non figées. Exigé pour passer au statut actif, voir CYCLE-DE-VIE.md."
+            uv sync
+          fi
 
       - name: Tests
         run: uv run pytest
@@ -118,7 +138,7 @@ jobs:
           done
           if [ -n "$restants" ]; then
             echo "::error::Notebooks contenant des sorties :$restants"
-            echo "Vider avec : uv run jupyter nbconvert --clear-output --inplace <fichier>"
+            echo "Vider avec : uvx --from nbconvert jupyter-nbconvert --clear-output --inplace <fichier>"
             exit 1
           fi
           echo "Aucune sortie de notebook commitée."

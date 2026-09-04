@@ -104,7 +104,7 @@ tests/
 
 **Notebooks.** Les sorties de cellules sont enregistrées dans le fichier. Ne
 jamais commiter un `.ipynb` sans l'avoir vidé :
-`uv run jupyter nbconvert --clear-output --inplace fichier.ipynb`
+`uvx --from nbconvert jupyter-nbconvert --clear-output --inplace fichier.ipynb`
 
 **Journalisation.** Loguer un prompt revient à loguer son contenu. Les traces
 ne sont pas commitées.
