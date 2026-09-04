@@ -49,6 +49,24 @@ et futurs. Une coquille se propage partout.
 
 Donc : par pull request, jamais en poussant directement sur `main`.
 
+Ce n'est pas qu'une consigne, c'est appliqué. Un ruleset « Protection de main »
+est actif sur la branche par défaut et interdit trois choses :
+
+| Règle | Effet |
+|---|---|
+| `pull_request` | Toute modification passe par une pull request |
+| `deletion` | La branche `main` ne peut pas être supprimée |
+| `non_fast_forward` | Aucune réécriture d'historique par force-push |
+
+Aucun contournement n'est configuré : la règle vaut aussi pour les
+propriétaires de l'organisation. La pull request n'exige en revanche pas
+d'approbation — GitHub interdit d'approuver sa propre PR, et l'exiger
+bloquerait tout tant que l'organisation ne compte qu'une personne. À revoir
+quand une deuxième personne peut relire.
+
+Une règle que rien n'applique finit ignorée, et une règle ignorée décrédibilise
+celles qui restent. C'est la raison d'être de ce ruleset, pas la défiance.
+
 Trois choses à vérifier avant de proposer un changement :
 
 - **La règle est applicable.** Une règle qu'on ne peut pas suivre décrédibilise
