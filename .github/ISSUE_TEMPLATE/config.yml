@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question ou discussion
+    url: https://github.com/Sandbox-IA-FHU/.github/discussions
+    about: Pour une question technique ou un doute sur une approche. Cherchez trente minutes avant, puis demandez.
+  - name: Clé d'API ou donnée qui a fuité
+    url: https://github.com/Sandbox-IA-FHU/.github/blob/main/SECURITY.md
+    about: N'ouvrez PAS d'issue publique. Suivez la procédure — révoquer d'abord, prévenir ensuite.
+  - name: Règles sur les données
+    url: https://github.com/Sandbox-IA-FHU/.github/blob/main/DONNEES.md
+    about: À lire avant votre premier commit.
