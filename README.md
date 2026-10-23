@@ -38,9 +38,10 @@ privé distinct — sinon les fichiers ne sont tout simplement pas repris, sans
 avertissement. C'est l'une des raisons pour lesquelles **les dépôts de projet
 sont publics** : ils héritent de ces règles, et rien d'interne n'y entre.
 
-Les dépôts de projet ont deux branches, `staging` et `main`, protégées par des
-rulesets d'organisation posés par Florian (détail dans
-[`CONTRIBUTING.md`](CONTRIBUTING.md)).
+Les dépôts de projet sont créés par Florian. Ils ont deux branches, `staging`
+et `main`, protégées par des rulesets posés **sur chaque dépôt** : en plan
+gratuit, les rulesets d'organisation ne sont pas appliqués. Détail dans
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Piège supplémentaire : renommer un job du workflow casse silencieusement tout
 ruleset qui l'exige comme check obligatoire. Un check requis dont le nom ne

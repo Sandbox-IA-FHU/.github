@@ -55,14 +55,23 @@ modèle de projet  →  un dépôt par projet  →  travail sur staging
                   →  import en production par le responsable
 ```
 
-- **Un dépôt par projet**, public, créé depuis le modèle correspondant
-  (« Use this template »). Juste après la création, la branche `staging` est
-  créée et poussée : le modèle ne copie que `main`.
+- **Un dépôt par projet**, public, **créé par Florian** depuis le modèle
+  correspondant. Les alternants ne créent pas de dépôt : ils le lui
+  demandent, en disant si le projet est individuel ou à deux. Florian les
+  ajoute en rôle Write (jamais Admin), pose les protections sur le dépôt et
+  crée `staging`. Les alternants clonent, puis `git switch staging`.
+- Une session Claude Code ne crée pas de dépôt et ne touche ni aux réglages
+  ni aux protections d'un dépôt.
 - **`staging`** est la branche de travail : push direct autorisé, ni
   force-push ni suppression.
 - **`main`** est la version validée. Elle ne change que par une PR
-  `staging` → `main`, approuvée par Florian et fusionnée **par lui seul**, en
-  merge commit. Une session Claude Code ne fusionne jamais.
+  `staging` → `main`, approuvée par Florian (code owner, sur le dernier push)
+  et fusionnée **par lui seul**, en merge commit ; ni suppression ni
+  force-push. Une session Claude Code ne fusionne jamais.
+- Ces protections sont posées par Florian **sur chaque dépôt**.
+- **Projet à deux** : chacun sur sa branche personnelle, mise à jour par
+  `git rebase origin/staging` puis intégrée dans `staging` (voir
+  « Branches de travail personnelles » dans `CONTRIBUTING.md`).
 - Un projet validé est **importé dans le dépôt de production par le
   responsable**. Les alternants n'y ont pas accès et ne cherchent pas à y
   accéder. Un projet né d'un modèle doit pouvoir y être importé tel quel :
