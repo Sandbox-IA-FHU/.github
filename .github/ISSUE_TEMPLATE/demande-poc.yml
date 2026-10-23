@@ -50,11 +50,11 @@ body:
     id: contraintes
     attributes:
       label: Contraintes connues
-      description: Budget, délai, sensibilité des données, obligation d'hébergement, latence acceptable.
+      description: Délai, sensibilité des données, volume à traiter (charge sur le LLM partagé), latence acceptable.
       placeholder: |
         - Les données comportent des informations personnelles : hébergement UE obligatoire
         - Traitement par lots le matin, la latence n'est pas critique
-        - Budget cible sous 100 € par mois
+        - Environ 80 demandes par jour, un appel au LLM chacune
 
   - type: textarea
     id: temps

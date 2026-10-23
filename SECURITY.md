@@ -17,6 +17,22 @@ Indiquez le dépôt, ce que vous avez constaté, et depuis quand si vous le save
 Vous n'avez pas besoin d'être certain qu'il s'agit d'un vrai problème pour
 signaler — c'est le rôle de la revue de trancher.
 
+## Accès au serveur de staging
+
+- **L'accès est personnel.** Chaque personne a son propre compte. Une clé SSH,
+  un mot de passe ou un token GitHub ne se partage jamais, même entre
+  alternants, même « juste pour dépanner ». Un accès partagé rend impossible
+  de savoir qui a fait quoi.
+- Une clé SSH perdue ou copiée ailleurs que sur votre poste se signale tout
+  de suite (adresse ci-dessus) : elle est révoquée, puis remplacée.
+- Un token GitHub porte les droits minimaux et une date d'expiration.
+- **On n'accède ni au GPU**, ni aux conteneurs, processus ou fichiers des
+  autres, **ni au dépôt de production**. Ce n'est pas une question de
+  confiance : un compte qui ne peut rien faire hors de son périmètre ne peut
+  pas non plus être retourné contre le reste.
+- Aucune adresse, aucun nom de serveur, aucune information sur cet
+  environnement ne s'écrit dans un dépôt : ils sont publics.
+
 ## Clés d'API
 
 ### Les règles
@@ -25,7 +41,7 @@ signaler — c'est le rôle de la revue de trancher.
   branche, même expirée. Une clé morte dans l'historique renseigne sur le
   format et sur l'endroit où chercher les vivantes.
 - Les clés sont lues depuis l'environnement, via un `.env` local **jamais
-  commité**. Un fichier `.env.exemple` documente les variables attendues, avec
+  commité**. Un fichier `.env.example` documente les variables attendues, avec
   des valeurs vides.
 - Chaque projet utilise une clé distincte quand le fournisseur le permet. Une
   clé compromise ne doit pas mettre en cause tous les projets.
@@ -107,16 +123,18 @@ anciens permettent l'exécution arbitraire au chargement.
 
 ### 4. La consommation
 
-Une boucle mal terminée sur une API facturée à l'appel, c'est une facture qui
-part toute seule pendant la nuit. Cas typiques : une boucle de réessai sans
-limite, un agent qui se rappelle lui-même, un traitement lancé sur un fichier
-plus gros que prévu.
+Le LLM local est **partagé** entre plusieurs projets. Une boucle mal terminée
+l'occupe toute seule pendant la nuit et ralentit tout le monde ; sur une API
+externe facturée à l'appel, c'est une facture qui part toute seule. Cas
+typiques : une boucle de réessai sans limite, un agent qui se rappelle
+lui-même, un traitement ou une évaluation lancés sur plus gros que prévu.
 
 Systématiquement :
 
-- Un plafond de dépense configuré côté fournisseur, sur chaque clé
 - Une limite de nombre d'itérations en dur dans toute boucle d'agent
-- Un test sur dix lignes avant de lancer sur dix mille
+- Un essai sur quelques cas avant un run complet (`--limite 3`)
+- Sur une API externe, un plafond de dépense configuré côté fournisseur, sur
+  chaque clé
 
 ## Dépendances
 

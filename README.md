@@ -35,7 +35,12 @@ est en tête de
 **La visibilité compte.** Ce dépôt public n'alimente que les dépôts publics de
 l'organisation. Pour couvrir des dépôts privés, il faut un dépôt `.github`
 privé distinct — sinon les fichiers ne sont tout simplement pas repris, sans
-avertissement.
+avertissement. C'est l'une des raisons pour lesquelles **les dépôts de projet
+sont publics** : ils héritent de ces règles, et rien d'interne n'y entre.
+
+Les dépôts de projet ont deux branches, `staging` et `main`, protégées par des
+rulesets d'organisation posés par Florian (détail dans
+[`CONTRIBUTING.md`](CONTRIBUTING.md)).
 
 Piège supplémentaire : renommer un job du workflow casse silencieusement tout
 ruleset qui l'exige comme check obligatoire. Un check requis dont le nom ne

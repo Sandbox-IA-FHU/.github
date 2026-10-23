@@ -23,7 +23,8 @@ relu, repris et défendu devant quelqu'un d'autre.
 
 **1. Une expérience non reproductible n'est pas un résultat.**
 Un run se rejoue ou n'existe pas. Il faut versionner ensemble : le prompt exact,
-le modèle **et sa version figée**, les paramètres (température, max tokens), et
+le modèle **exact** (nom, révision), les paramètres (réflexion, température,
+max tokens), et
 le jeu d'entrée. « J'ai essayé, ça marchait bien » n'est pas une conclusion.
 
 **2. On définit la mesure avant de construire.**
@@ -36,9 +37,11 @@ Les prix, les performances et les limites des modèles bougent tous les mois.
 Toute mesure, tout chiffrage, tout benchmark porte sa date. Sans date, on le
 considère comme périmé.
 
-**4. Le coût et la latence sont des critères de recette.**
-Au même rang que la qualité. Une réponse parfaite à 12 secondes et 40 centimes
-n'est pas une réponse acceptable. On mesure les trois ensemble, toujours.
+**4. La charge et la latence sont des critères de recette.**
+Au même rang que la qualité. Le LLM local est partagé : jetons consommés et
+nombre d'appels comptent autant que le temps de réponse. Une réponse parfaite
+en huit appels et une minute n'est pas forcément acceptable. On mesure les
+trois ensemble, toujours.
 
 **5. Aucune donnée réelle dans un dépôt.**
 Ni fichier, ni extrait, ni sortie de notebook, ni ligne de log. Même anonymisée.
@@ -46,8 +49,9 @@ Voir [DONNEES.md](https://github.com/Sandbox-IA-FHU/.github/blob/main/DONNEES.md
 
 **6. Le modèle n'est pas la solution par défaut.**
 Avant d'appeler un LLM : est-ce qu'une requête SQL, une règle métier ou une
-expression régulière ne suffirait pas ? Un appel modèle coûte de l'argent,
-ajoute de la latence et introduit du non-déterminisme. Il faut le mériter.
+expression régulière ne suffirait pas ? Un appel modèle occupe un serveur
+partagé, ajoute de la latence et introduit du non-déterminisme. Il faut le
+mériter.
 
 ## Socle technique
 
@@ -60,10 +64,12 @@ Ce qui est **figé** — on ne discute pas, c'est le même partout :
 | Qualité | `ruff` pour le formatage **et** le lint |
 | Tests | `pytest` |
 | Secrets | variables d'environnement, `.env` jamais commité |
+| Exécution | conteneurs Docker (rootless sur le serveur de staging) |
+| Modèle | le LLM local, par son API compatible OpenAI |
 
 Ce qui est **ouvert** — on choisit par projet, et on écrit pourquoi :
-framework d'orchestration, fournisseur de modèle, base vectorielle, outil
-d'évaluation. L'écosystème bouge trop vite pour figer ça à l'échelle de
+framework d'orchestration, base vectorielle, outil d'évaluation, recours à
+une API externe. L'écosystème bouge trop vite pour figer ça à l'échelle de
 l'organisation. Le choix se justifie dans le README du dépôt concerné.
 
 ## Cycle de vie

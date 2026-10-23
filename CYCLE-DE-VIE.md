@@ -10,7 +10,7 @@ monde — à commencer par celui qui l'a écrit, six mois plus tard.
 
 D'où la règle : **tout dépôt porte un statut explicite, à jour.**
 
-## Les quatre statuts
+## Les cinq statuts
 
 Le statut est marqué par un topic GitHub sur le dépôt, et répété dans l'en-tête
 de son README.
@@ -37,11 +37,39 @@ Le sujet est validé et le travail continue. Ce qui devient exigible :
 - Les dépendances sont figées (`uv.lock` commité)
 - Les tests passent, `ruff` est propre
 - Le README dit comment lancer le projet, avec des commandes vérifiées
-- Le coût et la latence sont mesurés et notés, avec leur date
+- La charge (jetons par tâche, nombre de tours) et la latence sont mesurées
+  et notées, avec leur date
 
 Un dépôt en exploration ne passe pas en actif tant que le jeu d'évaluation
 n'existe pas. C'est le seul point non négociable de la transition : sans mesure,
 on ne saura jamais si les modifications suivantes améliorent ou dégradent.
+
+### `statut-importe`
+
+Le projet a été validé par Florian et **importé dans le dépôt de production**
+par le responsable. C'est l'issue attendue d'un dépôt `statut-actif` qui a
+tenu son seuil.
+
+- Ce qui est importé est toujours la branche `main`, après fusion d'une PR
+  `staging` → `main`.
+- Le dépôt **reste vivant** : les évolutions continuent ici, sur `staging`,
+  puis repassent par une PR vers `main` et un nouvel import. Tout ce qui est
+  exigible en `statut-actif` le reste.
+- Un correctif fait directement en production est **reporté ici par une PR**,
+  dans la foulée. Deux versions qui divergent, c'est un import suivant qui
+  écrase un correctif sans que personne ne le voie.
+
+Le README note chaque import, dans un tableau à part de l'en-tête :
+
+```markdown
+| Date d'import | Commit de `main` importé | Version de production |
+|---|---|---|
+| AAAA-MM-JJ | `<commit court>` | vX.Y.Z |
+```
+
+La ligne est ajoutée par Florian au moment de l'import (ou à sa demande),
+avec le verdict de l'en-tête mis à jour : « importé en production le …, en
+version … ».
 
 ### `statut-gele`
 
@@ -110,6 +138,8 @@ Une fois par mois, passer les dépôts en revue et vérifier :
 - les statuts correspondent à la réalité
 - aucun dépôt en exploration n'est immobile depuis plus de 60 jours
 - aucun gel ne dure depuis plus de six mois
+- chaque dépôt `statut-importe` a son dernier import noté, et aucun correctif
+  de production n'attend d'être reporté
 - les dates d'en-tête sont crédibles
 
 Cinq minutes par mois. C'est ce qui évite de se retrouver, dans deux ans, avec

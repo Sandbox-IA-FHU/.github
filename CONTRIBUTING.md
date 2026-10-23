@@ -6,7 +6,7 @@ décrédibilise les autres.
 
 ## Mise en route
 
-Prérequis : Python 3.13, `uv`, Git 2.40+.
+Sur un poste — prérequis : Python 3.13, `uv`, Git 2.40+.
 
 ```bash
 uv sync
@@ -14,9 +14,13 @@ uv run ruff check .
 uv run pytest
 ```
 
-Ces trois commandes doivent fonctionner sur tout dépôt de l'organisation, sans
-étape supplémentaire non documentée. Si ce n'est pas le cas pour un dépôt,
-c'est un défaut du dépôt : ouvrez une issue.
+Sur le serveur de staging, rien ne s'installe au niveau du système : les
+mêmes vérifications tournent en conteneur, avec votre propre Docker rootless
+(`docker compose run --rm <service> pytest`, voir le README du dépôt).
+
+Ces commandes doivent fonctionner sur tout dépôt de l'organisation, sans
+étape supplémentaire non documentée, par les deux voies. Si ce n'est pas le
+cas pour un dépôt, c'est un défaut du dépôt : ouvrez une issue.
 
 On utilise `uv`, jamais `pip` seul, jamais `poetry`, jamais `conda`. Le fichier
 `uv.lock` est commité : deux personnes qui installent le même projet à deux
@@ -37,9 +41,60 @@ Le cadrage précède le code. Avant d'ouvrir l'éditeur, deux choses doivent êt
 Coder d'abord et mesurer ensuite est le réflexe le plus coûteux en IA : on
 passe des semaines à améliorer une impression.
 
-## Branches
+## Le circuit d'un projet
 
-Nommées en français, descriptives de la valeur apportée :
+Un projet = un dépôt, **public**, créé depuis le modèle correspondant
+(`agentic-model`, `rag-model`) avec « Use this template ». « Use this
+template » ne copie que la branche `main` : créez `staging` tout de suite
+après le premier clone.
+
+```bash
+git switch -c staging
+git push -u origin staging
+```
+
+Chaque dépôt de projet a deux branches, sur le modèle du dépôt de
+production :
+
+| Branche | Rôle |
+|---|---|
+| `staging` | Branche de travail. On y pousse directement. |
+| `main` | Version validée, celle qui est importée en production. |
+
+Le circuit complet :
+
+1. vous poussez votre travail sur `staging` ;
+2. quand un état est prêt, vous ouvrez une PR `staging` → `main` ;
+3. Florian (responsable) la relit et l'approuve — c'est le relecteur
+   obligatoire désigné par `.github/CODEOWNERS` ;
+4. Florian la fusionne, en **merge commit** ;
+5. quand le projet est validé, Florian l'importe dans le dépôt de production.
+   Vous n'avez pas accès à ce dépôt et ne cherchez pas à y accéder.
+
+La PR `staging` → `main` se fusionne toujours en merge commit, **jamais en
+squash ni en rebase** : ces deux modes recréent les commits sur `main`, et
+`staging` divergerait de `main` à chaque fusion.
+
+Les règles appliquées par l'organisation, telles qu'elles seront posées :
+
+| Branche | Règles |
+|---|---|
+| `main` | PR obligatoire, approbation du code owner, pas de suppression, pas de force-push |
+| `staging` | push direct autorisé, pas de suppression, pas de force-push |
+
+Tant qu'une seule personne relit, aucune approbation n'est exigée en dehors
+de celle de Florian. Ces règles sont posées par lui au niveau de
+l'organisation : ne cherchez pas à les modifier dans un dépôt.
+
+Après un import en production, **les évolutions continuent dans le dépôt de
+projet**. Un correctif fait directement en production est reporté dans le
+dépôt de projet par une PR, pour que les deux versions ne divergent pas.
+
+## Branches de travail personnelles
+
+Pour un travail que vous voulez isoler avant de le pousser sur `staging`,
+une branche personnelle est la bienvenue. Nommée en français, descriptive de
+la valeur apportée :
 
 ```
 extraction-lignes-facture
@@ -50,8 +105,10 @@ correction-timeout-embeddings
 Pas `test`, pas `fix`, pas `ma-branche`, pas `dev2`. Dans six mois, le nom de
 la branche est parfois la seule trace de l'intention.
 
-On rebase plutôt qu'on ne fusionne, pour garder un historique linéaire et
-lisible.
+Pour mettre à jour une branche personnelle avec `staging`, on rebase plutôt
+qu'on ne fusionne, pour garder un historique linéaire et lisible. Ne rebasez
+jamais `staging` ni `main` : elles sont partagées, et le force-push y est
+interdit.
 
 ## Commits
 
@@ -85,7 +142,8 @@ Elle modifie un système qui doit fonctionner. Ce qu'on attend :
 - `ruff` propre, `pytest` vert
 - Le jeu d'évaluation a tourné, et les résultats sont dans la PR
 - Aucune régression sous le seuil défini
-- Le coût et la latence sont indiqués s'ils ont bougé
+- Les jetons par tâche, le nombre de tours et la latence sont indiqués s'ils
+  ont bougé
 
 ### PR d'expérience
 
@@ -95,7 +153,8 @@ imparfait, c'est normal — ce qui est relu, c'est la validité de la conclusion
 Ce qu'on attend :
 
 - L'hypothèse testée, écrite avant le test
-- La configuration complète : modèle **et version figée**, paramètres, prompt
+- La configuration complète : modèle (nom exposé, modèle réel, révision),
+  niveau de réflexion, paramètres, prompt
 - Les chiffres obtenus, avec leur date et le nombre de cas
 - La conclusion, y compris quand elle est négative
 - Ce que l'expérience ne prouve pas
@@ -162,13 +221,17 @@ Trois vérifications tournent alors sur chaque push et chaque PR :
 | Check | Ce qu'il vérifie |
 |---|---|
 | `qualite` | `ruff check` et `ruff format --check` |
-| `tests` | `pytest`, avec des clés d'API volontairement invalides |
+| `tests` | `pytest`, avec une adresse de LLM injoignable et une clé factice |
 | `donnees` | Aucun `.env` suivi, aucune donnée hors de `evaluations/jeux/`, aucun fichier de plus de 5 Mo, aucun notebook avec ses sorties |
 
-Les clés invalides du job `tests` ne sont pas un oubli : **aucun test ne doit
-appeler un vrai fournisseur de modèle**. C'est lent, c'est facturé, et le
+L'adresse injoignable du job `tests` n'est pas un oubli : **aucun test ne
+doit appeler un vrai modèle**. C'est lent, ça charge un serveur partagé, et le
 résultat change d'une exécution à l'autre — un test qui échoue une fois sur
 trois ne sert à rien. Les appels se simulent.
+
+Un dépôt peut ajouter ses propres jobs à côté du workflow commun. Le modèle
+`agentic-model` ajoute ainsi `conteneur`, qui construit l'image et lance les
+tests dedans.
 
 Le check `donnees` filtre par **emplacement**, pas par extension : un jeu
 d'évaluation au format CSV est légitime dans `evaluations/jeux/` et refusé

@@ -118,10 +118,15 @@ métier, intégralement.
 Les fichiers de traces ne sont jamais commités. Si une trace est utile à
 partager, elle est reconstruite sur des données inventées.
 
-### 3. Ce qui part chez le fournisseur de modèle
+### 3. Ce qui part vers le modèle
 
-Tout ce qu'on envoie dans un appel API sort de l'infrastructure. Avant le
-premier appel sur des données qui ne sont pas les vôtres, vérifier :
+Avec le **LLM local**, les requêtes restent sur l'infrastructure interne. Ça
+ne les rend pas inoffensives : ce que le système envoie peut finir dans un
+log, une trace, ou la réflexion du modèle. Les règles des points 1 et 2
+s'appliquent à tout cela.
+
+Avec une **API externe**, tout ce qu'on envoie sort de l'infrastructure. Avant
+le premier appel sur des données qui ne sont pas les vôtres, vérifier :
 
 - la politique de rétention du fournisseur, et sa durée
 - si les données sont utilisées pour de l'entraînement (et comment désactiver)
