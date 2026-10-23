@@ -44,13 +44,17 @@ passe des semaines à améliorer une impression.
 ## Le circuit d'un projet
 
 Un projet = un dépôt, **public**, créé depuis le modèle correspondant
-(`agentic-model`, `rag-model`) avec « Use this template ». « Use this
-template » ne copie que la branche `main` : créez `staging` tout de suite
-après le premier clone.
+(`agentic-model`, `rag-model`).
+
+**Vous ne créez pas de dépôt.** Demandez-le à Florian (responsable), en lui
+disant si le projet est **individuel ou à deux**. Il crée le dépôt, vous y
+ajoute en rôle **Write**, pose les protections et crée la branche `staging`.
+Vous clonez, puis vous passez sur `staging` :
 
 ```bash
-git switch -c staging
-git push -u origin staging
+git clone https://github.com/Sandbox-IA-FHU/<nom-du-projet>.git
+cd <nom-du-projet>
+git switch staging
 ```
 
 Chaque dépôt de projet a deux branches, sur le modèle du dépôt de
@@ -65,8 +69,8 @@ Le circuit complet :
 
 1. vous poussez votre travail sur `staging` ;
 2. quand un état est prêt, vous ouvrez une PR `staging` → `main` ;
-3. Florian (responsable) la relit et l'approuve — c'est le relecteur
-   obligatoire désigné par `.github/CODEOWNERS` ;
+3. Florian la relit et l'approuve — c'est le relecteur obligatoire désigné
+   par `.github/CODEOWNERS` ;
 4. Florian la fusionne, en **merge commit** ;
 5. quand le projet est validé, Florian l'importe dans le dépôt de production.
    Vous n'avez pas accès à ce dépôt et ne cherchez pas à y accéder.
@@ -75,16 +79,16 @@ La PR `staging` → `main` se fusionne toujours en merge commit, **jamais en
 squash ni en rebase** : ces deux modes recréent les commits sur `main`, et
 `staging` divergerait de `main` à chaque fusion.
 
-Les règles appliquées par l'organisation, telles qu'elles seront posées :
+Les protections, posées par Florian **sur chaque dépôt** :
 
 | Branche | Règles |
 |---|---|
-| `main` | PR obligatoire, approbation du code owner, pas de suppression, pas de force-push |
+| `main` | PR obligatoire, approbation du code owner sur le dernier push, fusion en merge commit, pas de suppression, pas de force-push |
 | `staging` | push direct autorisé, pas de suppression, pas de force-push |
 
-Tant qu'une seule personne relit, aucune approbation n'est exigée en dehors
-de celle de Florian. Ces règles sont posées par lui au niveau de
-l'organisation : ne cherchez pas à les modifier dans un dépôt.
+Vous avez le rôle Write : vous ne pouvez modifier ni les réglages du dépôt ni
+ses protections. C'est voulu — un administrateur de dépôt pourrait les
+supprimer.
 
 Après un import en production, **les évolutions continuent dans le dépôt de
 projet**. Un correctif fait directement en production est reporté dans le
@@ -93,8 +97,11 @@ dépôt de projet par une PR, pour que les deux versions ne divergent pas.
 ## Branches de travail personnelles
 
 Pour un travail que vous voulez isoler avant de le pousser sur `staging`,
-une branche personnelle est la bienvenue. Nommée en français, descriptive de
-la valeur apportée :
+une branche personnelle est la bienvenue. Sur un **projet à deux**, c'est la
+règle : chacun travaille sur sa branche personnelle, puis l'intègre dans
+`staging`.
+
+Nommée en français, descriptive de la valeur apportée :
 
 ```
 extraction-lignes-facture
@@ -105,10 +112,57 @@ correction-timeout-embeddings
 Pas `test`, pas `fix`, pas `ma-branche`, pas `dev2`. Dans six mois, le nom de
 la branche est parfois la seule trace de l'intention.
 
-Pour mettre à jour une branche personnelle avec `staging`, on rebase plutôt
-qu'on ne fusionne, pour garder un historique linéaire et lisible. Ne rebasez
-jamais `staging` ni `main` : elles sont partagées, et le force-push y est
-interdit.
+Créer sa branche depuis `staging` à jour :
+
+```bash
+git switch staging
+git pull --ff-only
+git switch -c <branche-personnelle>
+```
+
+Avant d'intégrer, se mettre à jour avec ce qui a déjà été intégré dans
+`staging`, puis relancer les tests :
+
+```bash
+git fetch origin
+git rebase origin/staging
+```
+
+Puis intégrer dans `staging` et pousser :
+
+```bash
+git switch staging
+git pull --ff-only
+git merge --ff-only <branche-personnelle>
+git push origin staging
+```
+
+Si `git merge --ff-only` ou `git push` refuse, l'autre a intégré
+entre-temps : revenez sur votre branche et recommencez à `git fetch origin`.
+
+On rebase plutôt qu'on ne fusionne, pour garder un historique linéaire et
+lisible. Une branche personnelle déjà poussée puis rebasée se repousse avec
+`git push --force-with-lease`. Ne rebasez jamais `staging` ni `main` : elles
+sont partagées, et le force-push y est interdit.
+
+## Pour le responsable
+
+Création d'un dépôt de projet, une fois par projet :
+
+```bash
+gh repo create Sandbox-IA-FHU/<nom-du-projet> --template Sandbox-IA-FHU/<modele> --public
+gh api -X PUT repos/Sandbox-IA-FHU/<nom-du-projet>/collaborators/<compte-github> -f permission=push
+git clone https://github.com/Sandbox-IA-FHU/<nom-du-projet>.git
+cd <nom-du-projet>
+git switch -c staging
+git push -u origin staging
+```
+
+- `permission=push` correspond au rôle Write. Jamais Admin.
+- « Use this template » ne copie que `main` : `staging` se crée ici.
+- Les protections du tableau ci-dessus se posent ensuite sur le dépôt lui-même
+  (Settings → Rules → Rulesets). En plan gratuit, les rulesets
+  d'organisation ne sont pas appliqués : seuls ceux de dépôt le sont.
 
 ## Commits
 
