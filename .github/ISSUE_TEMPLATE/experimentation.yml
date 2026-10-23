@@ -31,11 +31,11 @@ body:
     id: mesure
     attributes:
       label: Comment on mesurera
-      description: Métrique, nombre de cas, seuil visé. Les trois axes — qualité, coût, latence.
+      description: Métrique, nombre de cas, seuil visé. Les trois axes — qualité, charge (jetons, appels), latence.
       placeholder: |
         - Qualité : comparaison exacte de la catégorie, sur 60 cas inventés (dont 12 hors périmètre)
         - Seuil : 90 % global, et 0 mauvaise catégorie sur les demandes urgentes
-        - Coût : maximum 1 centime par demande
+        - Charge : un seul appel au LLM par demande
         - Latence : médiane sous 2 s
     validations:
       required: true
@@ -44,7 +44,7 @@ body:
     id: configuration
     attributes:
       label: Configuration prévue
-      description: Modèle(s) envisagé(s) avec version figée, paramètres, ce qu'on compare à quoi.
+      description: Modèle(s) envisagé(s) — nom exposé et révision —, niveau de réflexion, paramètres, ce qu'on compare à quoi.
       placeholder: |
         Comparaison de 2 modèles, température 0, même prompt, même jeu.
         Un seul paramètre change entre les deux runs.
@@ -69,5 +69,5 @@ body:
           required: true
         - label: Aucune donnée réelle, aucun nom de client dans cette issue ni dans le jeu
           required: true
-        - label: Les identifiants de modèle seront figés (pas d'alias mouvant)
+        - label: Le modèle exact (nom exposé, modèle réel, révision) sera consigné dans chaque run
           required: true

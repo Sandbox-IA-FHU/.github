@@ -127,18 +127,22 @@ passer à l'échelle, avec trois précautions non négociables :
   oui/non » est mesurable ; « qualité globale : 7 » ne l'est pas.
 - Le juge ne doit **pas être le modèle évalué**. Il se note trop bien.
 
-### Coût
+### Charge
 
-En euros pour l'ensemble du jeu, puis ramené à l'unité métier : par facture
-traitée, par question posée, par document indexé.
+Le LLM local tourne sur un GPU déjà payé : il n'y a pas de facture à l'appel.
+Mais il est **partagé** entre plusieurs projets, et ce qu'un système lui fait
+traiter est du temps pris aux autres. La charge se mesure donc en :
 
-Le coût par unité est ce qui permet de dire si le projet tient : 4 centimes par
-document sur 200 documents par jour, c'est environ 2 000 € par an, et ça se
-compare à ce que coûte le traitement manuel. Le coût par appel API ne se compare
-à rien.
+- **jetons** en entrée et en sortie, séparément, lus dans `usage` — la
+  réflexion du modèle est comptée dans la sortie ;
+- **nombre d'appels** par unité métier — pour un agent, le nombre de tours ;
+- ramenés à l'**unité métier** : par facture traitée, par question posée, par
+  document indexé. Le total sur le jeu ne se compare à rien.
 
-Notez le nombre de jetons en entrée et en sortie, séparément — c'est ce qui
-permet de recalculer le coût quand les tarifs changent, sans tout relancer.
+Pour un projet qui utiliserait une API externe facturée, le coût se calcule en
+euros à partir de ces mêmes jetons, avec des tarifs datés. C'est pour cela
+qu'on note toujours les jetons d'entrée et de sortie séparément : un tarif qui
+change se recalcule sans tout relancer.
 
 ### Latence
 
@@ -155,8 +159,8 @@ l'usage prévu ».
 Écrivez-le avant de mesurer, dans le README :
 
 > Seuil : au moins 85 % de bonnes extractions sur le jeu d'évaluation, dont
-> 100 % sur les montants. Coût maximum 3 centimes par document. Latence médiane
-> sous 5 secondes.
+> 100 % sur les montants. Pas plus de 2 appels au LLM par document. Latence
+> médiane sous 5 secondes.
 
 Sans seuil écrit à l'avance, on ajuste l'exigence au résultat obtenu — 78 %
 devient « plutôt encourageant » un lundi et « insuffisant » le jeudi. Le seuil
@@ -175,13 +179,16 @@ Un run se rejoue, ou n'existe pas.
 
 Le point le plus important de cette page, et le plus souvent raté.
 
-Un identifiant de modèle sans version pointe vers une cible mouvante. Le
-fournisseur met à jour, votre score bouge de plusieurs points, vous cherchez
-dans votre code ce qui a changé. Rien n'a changé chez vous.
+Un nom de modèle n'est pas une version. Le LLM local est exposé sous un nom
+**stable**, qui ne change pas quand le modèle derrière change : c'est voulu,
+pour ne pas casser les projets à chaque bascule, mais votre score peut alors
+bouger de plusieurs points sans que rien n'ait changé chez vous. Une API
+externe pose le même problème avec ses alias.
 
-**Toute évaluation utilise un identifiant de modèle figé**, et cet identifiant
-figure dans le fichier de run. Un score sans version de modèle n'est pas
-interprétable — ni deux mois plus tard, ni par quelqu'un d'autre.
+**Toute évaluation consigne le modèle exact** : le nom exposé, le modèle réel
+déclaré par le serveur, sa révision, et le niveau de réflexion s'il y en a un.
+Un score sans ces éléments n'est pas interprétable — ni deux mois plus tard,
+ni par quelqu'un d'autre.
 
 ### Le fichier de run
 
@@ -190,16 +197,20 @@ Chaque évaluation produit un fichier versionné dans `evaluations/runs/` :
 ```json
 {
   "date": "2026-09-04",
-  "modele": "<identifiant complet, version figée>",
-  "parametres": { "temperature": 0, "max_tokens": 1024 },
+  "modele": {
+    "nom_expose": "<nom envoyé au serveur>",
+    "modele_reel": "<modèle déclaré par le serveur>",
+    "revision": "<révision exacte>"
+  },
+  "parametres": { "reflexion": "<niveau>", "max_tokens": 1024 },
   "prompt": "prompts/extraction_v3.txt",
   "jeu": "evaluations/jeux/factures_v2.jsonl",
   "nb_cas": 47,
   "resultats": {
     "reussite": 0.87,
     "reussite_montants": 1.0,
-    "cout_total_eur": 0.42,
-    "cout_par_document_eur": 0.009,
+    "jetons_par_document": 2300,
+    "appels_par_document": 1.4,
     "latence_mediane_s": 3.1,
     "latence_p95_s": 8.4
   },
@@ -211,7 +222,11 @@ Le champ `commentaire` est celui qu'on relit. Un score seul dit qu'il reste des
 erreurs ; il ne dit pas si elles sont concentrées sur un type de cas qu'on
 pourrait exclure du périmètre.
 
-`temperature: 0` pour toute évaluation. On ne mesure pas sur du bruit.
+Les réglages d'échantillonnage sont figés et consignés : on ne mesure pas sur
+du bruit. `temperature: 0` quand le modèle le supporte bien. Un modèle à
+réflexion fait souvent exception — ses recommandations d'usage déconseillent
+alors la température 0 : on garde les réglages recommandés, on le note dans le
+run, et on compense le hasard par le nombre de cas, ou en rejouant le run.
 
 ## Quand évaluer
 
@@ -250,5 +265,5 @@ Le fichier de run et le jeu d'évaluation vivent dans le dépôt : ce sont les
 sources.
 
 Les enseignements transverses — ce qui marche en général, les modèles écartés,
-les ordres de grandeur de coût — se consignent hors du dépôt, dans le carnet de
+les ordres de grandeur de charge et de coût — se consignent hors du dépôt, dans le carnet de
 travail, et sont partagés en Discussion quand ils servent à d'autres.

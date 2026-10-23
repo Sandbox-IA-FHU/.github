@@ -103,12 +103,13 @@ jobs:
       - name: Tests
         run: uv run pytest
         env:
-          # Aucun test ne doit dépendre d'un appel réseau à un fournisseur de
-          # modèle : c'est lent, facturé, et non déterministe. Les appels sont
-          # simulés. Une clé volontairement invalide fait échouer tout test qui
-          # tenterait un vrai appel.
-          ANTHROPIC_API_KEY: cle-invalide-pour-les-tests
-          OPENAI_API_KEY: cle-invalide-pour-les-tests
+          # Aucun test ne doit dépendre d'un appel réseau au LLM : c'est lent,
+          # ça charge un serveur partagé, et c'est non déterministe. Les appels
+          # sont simulés. Une adresse volontairement injoignable (port 9, rien
+          # n'y écoute) fait échouer vite tout test qui tenterait un vrai appel.
+          LLM_BASE_URL: http://127.0.0.1:9/v1
+          LLM_MODEL: modele-de-test
+          LLM_API_KEY: cle-factice-pour-les-tests
 
   donnees:
     name: donnees

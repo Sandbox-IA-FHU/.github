@@ -1,7 +1,8 @@
 <!--
 Deux types de PR dans cette organisation, elles ne se relisent pas pareil.
 Gardez la section qui correspond, supprimez l'autre.
-Voir CONTRIBUTING.md.
+Dans un dépôt de projet, la PR va de staging vers main ; Florian l'approuve
+et la fusionne en merge commit. Voir CONTRIBUTING.md.
 -->
 
 ## Ce qui change
@@ -31,20 +32,24 @@ Voir CONTRIBUTING.md.
 | Score avant | |
 | Score après | |
 | Nombre de cas | |
-| Coût par unité | |
+| Jetons par tâche (entrée + sortie) | |
+| Tours, médiane / max | |
 | Latence médiane / p95 | |
 
-- [ ] `uv run ruff check .` et `uv run pytest` passent
+- [ ] `ruff check`, `ruff format --check` et `pytest` passent (par `uv` ou en conteneur)
+- [ ] Si `compose.yaml` ou le `Dockerfile` a changé : `docker compose config -q` passe
 - [ ] Le jeu d'évaluation a tourné, aucune régression sous le seuil
-- [ ] Les chiffres ci-dessus portent leur date et la version de modèle utilisée
+- [ ] Les chiffres ci-dessus portent leur date, le modèle (nom exposé, modèle réel, révision) et le niveau de réflexion
 
 ## Si c'est une PR d'expérience
 
 **Hypothèse testée** (écrite avant le test) :
 
-**Configuration** — modèle et version figée, paramètres, prompt, jeu :
+**Configuration** — modèle (nom exposé, modèle réel, révision), niveau de
+réflexion, paramètres, prompt, jeu :
 
-**Résultats** — chiffres, date, nombre de cas :
+**Résultats** — chiffres, date, nombre de cas, jetons par tâche, tours,
+latence :
 
 **Conclusion**, y compris négative :
 
@@ -59,5 +64,6 @@ Voir CONTRIBUTING.md.
 - [ ] J'ai relu mon propre diff, fichier par fichier
 - [ ] Aucune donnée réelle, aucune clé, aucun nom de client dans le diff
 - [ ] Les notebooks sont vidés de leurs sorties
-- [ ] Les identifiants de modèle sont figés, pas des alias mouvants
+- [ ] Aucune adresse ni aucun nom de serveur dans le diff : l'adresse du LLM vient de `LLM_BASE_URL`
+- [ ] La réflexion du modèle n'apparaît dans aucun log, trace ou fichier commité
 - [ ] Le statut et la date en tête du README sont à jour
